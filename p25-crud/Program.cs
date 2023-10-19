@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddScoped<EmpleadoServicio>();
 
 builder.Services.AddDbContext<ContextoDatos>(options => 
 
@@ -20,6 +21,14 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
+}
+
+using (var scope = app.Services.CreateScope())
+{
+var servicios = scope.ServiceProvider;
+var contexto = servicios.GetRequiredService<ContextoDatos>();
+contexto.Database.EnsureCreated();
+InicializadorBD.Inicializar(contexto);
 }
 
 

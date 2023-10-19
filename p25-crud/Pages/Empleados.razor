@@ -1,0 +1,54 @@
+@page "/empleados"
+@inject EmpleadoServicio empleadoServicio
+@inject IJSRuntime jsRuntime
+<h3>Empleados</h3>
+<NavLink class="nav-link" href="empleado/agregar">
+<span class="oi oi-plus" aria-hidden="true">Agregar Empleado</span>
+</NavLink>
+<div class="row">
+<div class="col-md-6">
+<table class="table table-hover">
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Rfc</th>
+<th>Edad</th>
+<th>Genero</th>
+<th>Correo</th>
+<th>Salario</th>
+<th>Accion</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var empleado in empleados)
+{
+<tr>
+<td>@empleado.Nombre</td>
+<td>@empleado.Rfc</td>
+<td>@empleado.Edad</td>
+<td>@empleado.Genero</td>
+<td>@empleado.Correo</td>
+<td>@empleado.Salario</td>
+<td>
+<a href="empleado/editar/@empleado.Id" class="btn btn-success">Editar</a>
+<a class="btn btn-danger" @onclick="async ()=> await Borrar(empleado)">Borrar</a>
+</td>
+</tr>
+}
+</tbody>
+</table>
+</div>
+</div>
+@code {
+private List<Empleado> empleados = new();
+protected override void OnInitialized()
+{
+empleados = empleadoServicio.ObtenerTodo();
+}
+private async Task Borrar(Empleado empleado) {
+bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Estas seguro????");
+if (confirmed)
+if(empleadoServicio.Borrar(empleado.Id))
+empleados.Remove(empleado);
+}
+}

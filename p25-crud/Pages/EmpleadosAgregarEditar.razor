@@ -1,0 +1,85 @@
+@page "/empleado/agregar"
+@page "/empleado/editar/{Id:int}"
+@inject EmpleadoServicio empleadoServicio
+@inject NavigationManager NavigationManager
+<h3>@Titulo</h3>
+
+@code {
+[Parameter]
+public int Id {get; set;}
+Empleado emp = new Empleado();
+private string mensaje = string.Empty;
+private string Titulo="Agregar Persona";
+protected void Grabar() {
+if(empleadoServicio.AgregarActualizar(emp)) {
+mensaje = "Agregado exitosamente ";
+} else mensaje = "No pudo agregarse";
+NavigationManager.NavigateTo("empleados");
+}
+void Cancel()
+{
+NavigationManager.NavigateTo("empleados");
+}
+protected override void OnInitialized()
+{
+if (Id > 0) {
+Titulo = "Actualizar Persona";
+emp = empleadoServicio.EcontrarPorId(Id);
+}
+base.OnInitialized();
+}
+}
+
+<div class="row">
+<div class="col-md-6">
+<EditForm Model="@emp" OnValidSubmit="Grabar">
+<DataAnnotationsValidator/>
+<div class="form-group">
+<label for="Name">Nombre</label>
+<InputText class="form-control" @bind-Value="emp.Nombre"/>
+<ValidationMessage For="@(()=>emp.Nombre)"/>
+</div>
+<div class="form-group">
+<label for="Rfc">Rfc</label>
+<InputText class="form-control" @bind-Value="emp.Rfc"/>
+<ValidationMessage For="@(()=>emp.Rfc)"/>
+</div>
+<div class="form-group">
+<label for="Edad">Edad</label>
+<InputNumber typeclass="form-control" @bind-Value="emp.Edad"/>
+<ValidationMessage For="@(()=>emp.Edad)"/>
+</div>
+<div class="form-group">
+<label for="Genero" class="control-label"></label>
+<select @bind="@emp.Genero" class="form-control">
+<option value="">-Selecciona Genero</option>
+<option value="Hombre">Hombre</option>
+<option value="Mujer">Mujer</option>
+</select>
+</div>
+<div class="form-group">
+<label for="Correo">Correo</label>
+<InputText class="form-control" @bind-Value="emp.Correo"/>
+<ValidationMessage For="@(()=>emp.Correo)"/>
+</div>
+<div class="form-group">
+<label for="Salario">Salario</label>
+<InputNumber typeclass="form-control" @bind-Value="emp.Salario"/>
+<ValidationMessage For="@(()=>emp.Salario)"/>
+</div>
+<div>
+
+@mensaje
+
+</div>
+<div class="row">
+<div class="col-md-4">
+<div class="form-group">
+<input type="button" class="btn btn-primary" @onclick="@Grabar" value="Grabar"/>
+<input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancelar"/>
+</div>
+</div>
+</div>
+</EditForm>
+</div>
+</div>

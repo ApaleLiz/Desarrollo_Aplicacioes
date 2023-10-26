@@ -1,0 +1,100 @@
+@page "/jugador/agregar"
+@page "/jugador/editar/{Id:int}"
+@inject JugadorServicio jugadorServicio
+@inject NavigationManager NavigationManager
+
+<h3>@Titulo</h3>
+
+<div class="row">
+    <div class="col-md-6">
+    <EditForm Model="@jug" OnValidSubmit="Grabar">
+
+        <DataAnnotationsValidator/>
+
+        <div class="form-group">
+            <label for="Name">Nombre</label>
+            <InputText class="form-control" @bind-Value="jug.Nombre"/>
+            <ValidationMessage For="@(()=>jug.Nombre)"/>
+        </div>
+
+        <div class="form-group">
+            <label for="FechaNac">Fecha de nacimiento</label>
+            <InputDate class="form-control" @bind-Value="jug.FechaNac"/>
+            <ValidationMessage For="@(()=>jug.FechaNac)"/>
+        </div>
+
+        <div class="form-group">
+            <label for="NoPlayera">No. Playera</label>
+            <InputNumber typeclass="form-control" @bind-Value="jug.NoPlayera"/>
+            <ValidationMessage For="@(()=>jug.NoPlayera)"/>
+        </div>
+
+        <div class="form-group">
+            <label for="Posicion" class="control-label"></label>
+            <select @bind="@jug.Posicion" class="form-control">
+            <option value="">-Selecciona Posición</option>
+            <option value="Defensa">Defensa</option>
+            <option value="Medio">Medio</option>
+            <option value="Delantero">Delantero</option>
+            <option value="Lateral">Lateral</option>
+            <option value="Portero">Portero</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Apariciones">Apariciones</label>
+            <InputNumber class="form-control" @bind-Value="jug.Apariciones"/>
+            <ValidationMessage For="@(()=>jug.Apariciones)"/>
+        </div>
+
+        <div class="form-group">
+            <label for="Goles">Goles</label>
+            <InputNumber typeclass="form-control" @bind-Value="jug.Goles"/>
+            <ValidationMessage For="@(()=>jug.Goles)"/>
+        </div>
+
+        <div>
+
+            @mensaje
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Grabar"/>
+                    <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancelar"/>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id {get; set;}
+
+    Jugador jug = new Jugador();
+    private string mensaje = string.Empty;
+    private string Titulo="Agregar Persona";
+
+    protected void Grabar() {
+        if(jugadorServicio.AgregarActualizar(jug)) {
+        mensaje = "Agregado exitosamente ";
+        } else mensaje = "No pudo agregarse";
+        NavigationManager.NavigateTo("jugadores",forceLoad:true);
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("jugadores",forceLoad:true);
+        }
+            protected override void OnInitialized()
+        {
+        if (Id > 0) {
+            Titulo = "Actualizar Persona";
+            jug = jugadorServicio.EcontrarPorId(Id);
+        }
+        base.OnInitialized();
+    }
+}

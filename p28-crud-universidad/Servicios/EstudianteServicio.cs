@@ -2,18 +2,18 @@ using Microsoft.EntityFrameworkCore;
 public class EstudianteServicio {
 private readonly ContextoDatos ctx;
 public EstudianteServicio(ContextoDatos contexto) => ctx = contexto;
+
 public List<Estudiante> ObtenerTodo(string cadenabuscar) {
 var _estudiantes = ctx.Estudiantes
 .Include(i=>i.Inscripciones)
 .ThenInclude(c=>c.Curso);
 var estudiantes = from e in _estudiantes select e;
 if(!string.IsNullOrEmpty(cadenabuscar)) {
-
 estudiantes = estudiantes.Where(e=>e.Apeido.Contains(cadenabuscar) || e.Nombre.Contains(cadenabuscar));
-
 }
 return estudiantes.ToList();
 }
+
 public bool AgregarActualizar(Estudiante estudiante) {
 try {
 if (estudiante.Id == 0) ctx.Estudiantes.Add(estudiante);

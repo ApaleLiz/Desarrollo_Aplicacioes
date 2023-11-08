@@ -1,15 +1,20 @@
 using Microsoft.EntityFrameworkCore;
+
 public class CursoServicio {
 private readonly ContextoDatos ctx;
 public CursoServicio(ContextoDatos contexto) => ctx = contexto;
+
 public List<Curso> ObtenerTodo(string cadenabuscar) {
-var _cursos = ctx.Cursos;
+var _cursos = ctx.Cursos
+.Include(i=>i.Inscripciones)
+.ThenInclude(e=>e.Estudiante);
 var cursos = from c in _cursos select c;
 if(!string.IsNullOrEmpty(cadenabuscar)) {
 cursos = cursos.Where(c=>c.Titulo.Contains(cadenabuscar));
 }
 return cursos.ToList();
 }
+
 public bool AgregarActualizar(Curso curso) {
 try {
 if (curso.CursoId == 0) ctx.Cursos.Add(curso);

@@ -1,0 +1,63 @@
+@* Pages/CursoAgregarEditar.razor *@
+@page "/curso/agregar"
+@page "/curso/editar/{Id:int}"
+@inject CursoServicio cursoServicio
+@inject NavigationManager NavigationManager
+<h3>@Titulo</h3>
+<div class="row">
+<div class="col-md-6">
+<EditForm Model="@cur" OnValidSubmit="Grabar">
+<DataAnnotationsValidator/>
+<div class="form-group">
+<label for="CursoId">CursoId</label>
+<InputNumber typeclass="form-control" @bind-Value="cur.CursoId" disabled=@deshabilitar/>
+<ValidationMessage For="@(()=>cur.CursoId)"/>
+</div>
+<div class="form-group">
+<label for="Name">Titulo</label>
+<InputText class="form-control" @bind-Value="cur.Titulo"/>
+<ValidationMessage For="@(()=>cur.Titulo)"/>
+</div>
+<div class="form-group">
+<label for="Creditos">Créditos</label>
+<InputNumber typeclass="form-control" @bind-Value="cur.Creditos"/>
+<ValidationMessage For="@(()=>cur.Creditos)"/>
+</div>
+<div>
+@mensaje
+</div>
+<div class="my-2">
+<input type="submit" class="btn btn-primary" value="Grabar"/>
+<input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancelar"/>
+</div>
+</EditForm>
+</div>
+</div>
+@code {
+[Parameter]
+public int Id {get; set;}
+Curso cur = new Curso();
+private string mensaje = string.Empty;
+private string Titulo="Agregar Curso";
+private bool deshabilitar = false;
+protected void Grabar() {
+if(cursoServicio.AgregarActualizar(cur)) {
+mensaje = "Agregado exitosamente ";
+
+} else mensaje = "No pudo agregarse";
+
+NavigationManager.NavigateTo("cursos",forceLoad:true);
+
+}
+void Cancel() {
+NavigationManager.NavigateTo("cursos",forceLoad:true);
+}
+protected override void OnInitialized() {
+if (Id > 0) {
+Titulo = "Actualizar Curso";
+cur = cursoServicio.EcontrarPorId(Id);
+deshabilitar = true;
+}
+base.OnInitialized();
+}
+}

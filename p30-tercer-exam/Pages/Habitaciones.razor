@@ -1,0 +1,59 @@
+@* Pages/Habitaciones.razor *@
+@page "/habitaciones"
+@inject HabitacionServicio habitacionServicio
+@inject IJSRuntime jsRuntime
+<h3>Habitaciones</h3>
+<NavLink class="nav-link" href="habitacion/agregar">
+<span class="oi oi-plus" aria-hidden="true">Agregar habitacion</span>
+</NavLink>
+<label>Buscar:</label>
+<input type="text" @oninput="@( (e) => Filtro(e) )">
+<div class="row">
+<div class="col-md-6">
+<table class="table table-hover">
+<thead>
+<tr>
+<th>Id</th>
+<th>NoHab</th>
+<th>Tipo</th>
+<th>Piso</th>
+<th>Costo</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var habitacion in habitaciones) {
+<tr>
+<td>@habitacion.Id</td>
+<td>@habitacion.NoHab</td>
+<td>@habitacion.Tipo</td>
+<td>@habitacion.Piso</td>
+<td>@habitacion.Costo</td>
+<td>
+
+<a href="habitacion/editar/@habitacion.Id" class="btn btn-success">Editar</a>
+
+<a class="btn btn-danger" @onclick="async ()=> await
+Borrar(habitacion)">Borrar</a>
+</td>
+</tr>
+}
+</tbody>
+</table>
+</div>
+</div>
+@code {
+private List<Habitacion> habitaciones = new();
+protected override void OnInitialized(){
+habitaciones = habitacionServicio.ObtenerTodo("");
+}
+private async Task Borrar(Habitacion habitacion) {
+bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Estas seguro????");
+if (confirmed)
+if(habitacionServicio.Borrar(habitacion.Id))
+habitaciones.Remove(habitacion);
+}
+protected void Filtro(ChangeEventArgs e) {
+string cadenabuscar = e.Value.ToString();
+habitaciones = habitacionServicio.ObtenerTodo(cadenabuscar);
+}
+}

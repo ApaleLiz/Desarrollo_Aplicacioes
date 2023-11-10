@@ -1,0 +1,82 @@
+@* Pages/InscripcionAgregarEditar.razor *@
+@page "/inscripcion/agregar"
+@page "/inscripcion/editar/{Id:int}"
+@inject NavigationManager NavigationManager
+@inject InscripcionServicio inscripcionServicio
+@inject EstudianteServicio estudianteServicio;
+@inject CursoServicio cursoServicio;
+<h3>@Titulo</h3>
+<div class="row">
+<div class="col-md-6">
+<EditForm Model="@ins" OnValidSubmit="Grabar">
+<DataAnnotationsValidator/>
+<div class="form-group">
+<label for="CursoId">InscripcionId</label>
+<InputNumber typeclass="form-control" @bind-Value="ins.InscripcionId" disabled=true/>
+<ValidationMessage For="@(()=>ins.InscripcionId)"/>
+</div>
+<div class="form-group">
+<label for="CursoId" class="control-label">Curso</label>
+<InputSelect id="CursoId" class="form-control" @bind-Value="ins.CursoId">
+<option value="@(0)" disabled >-Elije un Curso-</option>
+@foreach (var i in @cur) {
+
+<option value="@i.CursoId">@i.Titulo</option>
+
+}
+</InputSelect>
+</div>
+<div class="form-group">
+<label for="EstudianteId" class="control-label">Estudiante </label>
+<InputSelect id="EstudianteId" class="form-control" @bind-Value="ins.EstudianteId">
+<option value="@(0)" disabled >-Elije Estudiante-</option>
+@foreach (var i in @est) {
+
+<option value="@i.Id">@i.NombreCompleto</option>
+
+}
+</InputSelect>
+</div>
+<div class="form-group">
+<label for="Promedio" class="control-label">Promedio</label>
+<InputNumber id="Promedio" class="form-control" @bind-Value="ins.Promedio"/>
+</div>
+<div>
+@mensaje
+</div>
+<div class="my-2">
+<input type="submit" class="btn btn-primary" value="Grabar"/>
+<input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancelar"/>
+</div>
+</EditForm>
+</div>
+</div>
+@code {
+[Parameter]
+public int Id {get; set;}
+Inscripcion ins = new Inscripcion();
+List<Estudiante> est;
+List<Curso> cur;
+private string mensaje = string.Empty;
+private string Titulo="Inscribir Alumno";
+private bool deshabilitar = false;
+protected void Grabar() {
+if(inscripcionServicio.AgregarActualizar(ins)) {
+mensaje = "Agregado exitosamente ";
+
+} else mensaje = "No pudo agregarse";
+NavigationManager.NavigateTo("inscripciones",forceLoad:true);
+}
+void Cancel() {
+NavigationManager.NavigateTo("inscripciones",forceLoad:true);
+}
+protected override void OnInitialized() {
+if (Id > 0) {
+Titulo = "Actualizar Inscripcion";
+ins = inscripcionServicio.EcontrarPorId(Id);
+deshabilitar = true;
+}
+est = estudianteServicio.ObtenerTodo("");
+cur = cursoServicio.ObtenerTodo("");
+}
+}

@@ -1,0 +1,55 @@
+@page "/inscripciones"
+@inject InscripcionServicio inscripcionServicio
+@inject IJSRuntime jsRuntime
+<h3>Inscripciones</h3>
+<NavLink class="nav-link" href="inscripcion/agregar">
+<span class="oi oi-plus" aria-hidden="true">Agregar inscripcion</span>
+</NavLink>
+<div class="row">
+<div class="col-md-6">
+<table class="table table-hover">
+<thead>
+<tr>
+<th>InscripcionID</th>
+<th>Nombre Completo</th>
+<th>CursoID</th>
+<th>Titulo</th>
+<th>Promedio</th>
+</tr>
+</thead>
+<tbody>
+@foreach (var inscripcion in inscripciones)
+{
+<tr>
+<td>@inscripcion.InscripcionId</td>
+<td>@inscripcion.Estudiante.NombreCompleto</td>
+<td>@inscripcion.CursoId</td>
+<td>@inscripcion.Curso.Titulo</td>
+<td>@inscripcion.Promedio</td>
+<td>
+<a
+href="inscripcion/editar/@inscripcion.InscripcionId"
+class="btn btn-success">Editar</a>
+<a class="btn btn-danger" @onclick="async ()=> await
+Borrar(inscripcion)">Borrar</a>
+</td>
+</tr>
+}
+</tbody>
+
+</table>
+</div>
+
+</div>
+@code {
+private List<Inscripcion> inscripciones = new();
+protected override void OnInitialized(){
+inscripciones = inscripcionServicio.ObtenerTodo();
+}
+private async Task Borrar(Inscripcion inscripcion) {
+bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Estas seguro????");
+if (confirmed)
+if(inscripcionServicio.Borrar(inscripcion.InscripcionId))
+inscripciones.Remove(inscripcion);
+}
+}

@@ -1,0 +1,70 @@
+@page "/cursos"
+@inject CursoServicio cursoServicio
+@inject IJSRuntime jsRuntime
+<h3>Cursos</h3>
+
+<NavLink class="nav-link" href="curso/agregar">
+<span class="oi oi-plus" aria-hidden="true">Agregar curso</span>
+</NavLink>
+<label>Buscar:</label>
+<input type="text" @oninput="@( (e) => Filtro(e) )">
+
+<div class="row">
+    <div class="col-md-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                <th>CursoId</th>
+                <th>Titulo</th>
+                <th>Creditos</th>
+                <td></td>
+                <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                    @foreach (var curso in cursos)
+                    {
+                    <tr>
+                        <td>@curso.CursoId</td>
+                        <td>@curso.Titulo</td>
+                        <td>@curso.Creditos</td>
+                        @if(curso.Inscripciones.Count==0) {
+                        <td>-sin inscripciones-</td>
+                        } else {
+                        <td>
+                    
+                    @foreach(var est in curso.Inscripciones) {
+                        @String.Format($"{@est.Estudiante.NombreCompleto} - {@est.Estudiante.FechaInscripcion.ToString("dd-MM-yyy")}") <br />
+                    }
+                    </td>
+                }
+                <td>
+
+                        <a href="curso/editar/@curso.CursoId" class="btn btn-success">Editar</a>
+
+                        <a class="btn btn-danger" @onclick="async ()=> await Borrar(curso)">Borrar</a>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+@code {
+    private List<Curso> cursos = new();
+    protected override void OnInitialized(){
+    cursos = cursoServicio.ObtenerTodo("");
+    }
+    private async Task Borrar(Curso curso) {
+    bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Estas seguro????");
+    if (confirmed)
+    if(cursoServicio.Borrar(curso.CursoId))
+    cursos.Remove(curso);
+    }
+    protected void Filtro(ChangeEventArgs e) {
+    string cadenabuscar = e.Value.ToString();
+    cursos = cursoServicio.ObtenerTodo(cadenabuscar);
+    }
+}

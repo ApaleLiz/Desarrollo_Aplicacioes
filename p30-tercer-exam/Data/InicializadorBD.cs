@@ -10,14 +10,13 @@ public class InicializadorBD
         // Inicializar datos de clientes
         var clientes = new List<Cliente>
         {
-            new Cliente { Nombre = "Juan", Apellido = "Pérez", Genero = 'M', FechaCumple = DateTime.Parse("1990-05-15"), Correo = "juan@example.com", Telefono = "1234567890" },
-            new Cliente { Nombre = "María", Apellido = "Gómez", Genero = 'F', FechaCumple = DateTime.Parse("1985-08-22"), Correo = "maria@example.com", Telefono = "9876543210" },
-            new Cliente { Nombre = "Carlos", Apellido = "Rodríguez", Genero = 'M', FechaCumple = DateTime.Parse("1982-03-10"), Correo = "carlos@example.com", Telefono = "5555555555" },
-            new Cliente { Nombre = "Laura", Apellido = "Martínez", Genero = 'F', FechaCumple = DateTime.Parse("1995-12-01"), Correo = "laura@example.com", Telefono = "7777777777" },
-            new Cliente { Nombre = "Luis", Apellido = "González", Genero = 'M', FechaCumple = DateTime.Parse("1988-07-18"), Correo = "luis@example.com", Telefono = "8888888888" },
-            new Cliente { Nombre = "Ana", Apellido = "Sánchez", Genero = 'F', FechaCumple = DateTime.Parse("1993-09-25"), Correo = "ana@example.com", Telefono = "9999999999" },
-            new Cliente { Nombre = "Pedro", Apellido = "López", Genero = 'M', FechaCumple = DateTime.Parse("1987-11-05"), Correo = "pedro@example.com", Telefono = "6666666666" },
-            new Cliente { Nombre = "Sofía", Apellido = "Díaz", Genero = 'F', FechaCumple = DateTime.Parse("1998-04-14"), Correo = "sofia@example.com", Telefono = "4444444444" }
+            new Cliente { Nombre = "Felipe", Apellido = "Guzman", Genero = 'M', FechaCumple = DateTime.Parse("1998-05-15"), Correo = "Fel@gmail.com", Telefono = "4921582395" },
+            new Cliente { Nombre = "Paola", Apellido = "Roque", Genero = 'F', FechaCumple = DateTime.Parse("1985-08-22"), Correo = "Pao@gmail.com", Telefono = "7521452896" },
+            new Cliente { Nombre = "Jhoan", Apellido = "Duran", Genero = 'M', FechaCumple = DateTime.Parse("2000-03-10"), Correo = "jhos@gmail.com", Telefono = "4562397841" },
+            new Cliente { Nombre = "Marely", Apellido = "Martínez", Genero = 'F', FechaCumple = DateTime.Parse("2007-12-01"), Correo = "Mar@gmail.com", Telefono = "2721014586" },
+            new Cliente { Nombre = "Camilo", Apellido = "González", Genero = 'M', FechaCumple = DateTime.Parse("1900-07-18"), Correo = "Beee@gmail.com", Telefono = "2714857963" },
+            new Cliente { Nombre = "Teresa", Apellido = "Rodriguez", Genero = 'F', FechaCumple = DateTime.Parse("2001-09-25"), Correo = "Cal@gmail.com", Telefono = "8984562321" },
+            new Cliente { Nombre = "Elena", Apellido = "Apale", Genero = 'F', FechaCumple = DateTime.Parse("1879-04-14"), Correo = "Ele@gmail.com", Telefono = "9984574926" }
         };
         contexto.Clientes.AddRange(clientes);
         contexto.SaveChanges();
@@ -25,16 +24,15 @@ public class InicializadorBD
         // Inicializar datos de habitaciones
         var habitaciones = new List<Habitacion>
         {
-             new Habitacion {Id = 1, NoHab = 101, Tipo = "Doble", Piso = 1, Costo = 150.00 },
-            new Habitacion { Id = 2, NoHab = 102, Tipo = "Doble", Piso = 1, Costo = 150.00 },
+             new Habitacion {Id = 1, NoHab = 101, Tipo = "Doble", Piso = 1, Costo = 160.00 },
+            new Habitacion { Id = 2, NoHab = 102, Tipo = "Doble", Piso = 1, Costo = 160.00 },
             new Habitacion { Id = 3, NoHab = 201, Tipo = "Individual", Piso = 2, Costo = 100.00 },
             new Habitacion { Id = 4, NoHab = 202, Tipo = "Individual", Piso = 2, Costo = 100.00 },
             new Habitacion { Id = 5, NoHab = 301, Tipo = "Suite", Piso = 3, Costo = 200.00 },
             new Habitacion { Id = 6, NoHab = 302, Tipo = "Suite", Piso = 3, Costo = 200.00 },
             new Habitacion { Id = 7, NoHab = 401, Tipo = "Presidencial", Piso = 4, Costo = 300.00 },
-            new Habitacion { Id = 8, NoHab = 402, Tipo = "Presidencial", Piso = 4, Costo = 300.00 },
-            new Habitacion { Id = 9, NoHab = 103, Tipo = "Doble", Piso = 1, Costo = 150.00 },
-            new Habitacion { Id = 10, NoHab = 203, Tipo = "Individual", Piso = 2, Costo = 100.00 }
+            new Habitacion { Id = 8, NoHab = 402, Tipo = "Presidencial", Piso = 4, Costo = 300.00 }
+          
         };
         contexto.Habitaciones.AddRange(habitaciones);
         contexto.SaveChanges();
@@ -42,8 +40,11 @@ public class InicializadorBD
         // Inicializar datos de reservas
         var reservas = new List<Reserva>
         {
-            new Reserva { HabitacionId = 1, ClienteId = 1, InicioReserva = DateTime.Parse("2023-01-01"), FinReserva = DateTime.Parse("2023-01-07") },
+            new Reserva { HabitacionId = 1, ClienteId = 1, InicioReserva = DateTime.Parse("2023-08-03"), FinReserva = DateTime.Parse("2023-08-11") },
             new Reserva { HabitacionId = 2, ClienteId = 2, InicioReserva = DateTime.Parse("2023-02-01"), FinReserva = DateTime.Parse("2023-02-07") },
+             new Reserva { HabitacionId = 3, ClienteId = 3, InicioReserva = DateTime.Parse("2023-01-01"), FinReserva = DateTime.Parse("2023-01-07") },
+            new Reserva { HabitacionId = 4, ClienteId = 4, InicioReserva = DateTime.Parse("2023-01-01"), FinReserva = DateTime.Parse("2023-01-07") }
+           
         };
         contexto.Reservas.AddRange(reservas);
         contexto.SaveChanges();

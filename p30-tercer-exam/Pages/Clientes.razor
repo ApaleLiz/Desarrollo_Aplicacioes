@@ -2,64 +2,95 @@
 @page "/clientes"
 @inject ClienteServicio clienteServicio
 @inject IJSRuntime jsRuntime
+
 <h3>Clientes</h3>
+
 <NavLink class="nav-link" href="cliente/agregar">
 <span class="oi oi-plus" aria-hidden="true">Agregar cliente</span>
 </NavLink>
 <label>Buscar cliente:</label>
 <input type="text" @oninput="@( (e) => Filtro(e) )">
+
 <div class="row">
-<div class="col-md-6">
-<table class="table table-hover">
-<thead>
-<tr>
-<th>Nombre</th>
-<th>Apellido</th>
-<th>Genero</th>
-<th>Fecha Nacimiento</th>
-<th>Correo</th>
-<th>Telefono</th>
-<th>Nombre Completo</th>
-</tr>
-</thead>
-<tbody>
-@foreach (var cliente in clientes) {
-<tr>
-<td>@cliente.Nombre</td>
-<td>@cliente.Apellido</td>
-<td>@cliente.Genero</td>
-<td>@cliente.FechaCumple</td>
-<td>@cliente.Correo</td>
-<td>@cliente.Telefono</td>
-<td>@cliente.NombreCompleto</td>
-
-<td>
-
-<a href="cliente/editar/@cliente.Id" class="btn btn-success">Editar</a>
-
-<a class="btn btn-danger" @onclick="async ()=> await
-Borrar(cliente)">Borrar</a>
-</td>
-</tr>
-}
-</tbody>
-</table>
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                <th>Nombre</th>
+                <th>Apeido</th>
+                <th>Genero</th>
+                <th>Fecha Cumple</th>
+                <th>Correo</th>
+                <th>Telefono</th>
+                <th>Nombre Completo</th>
+                <th>Edad</th>
+                <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var cliente in clientes)
+                {
+                <tr>
+                    <td>@cliente.Nombre</td>
+                    <td>@cliente.Apellido</td>
+                    <td>@cliente.Genero</td>
+                    <td>@cliente.FechaCumple.ToString("dd-MMM-yyyy")</td>
+                    <td>@cliente.Correo</td>
+                    <td>@cliente.Telefono</td>
+                    <td>@cliente.NombreCompleto</td>
+                    <td>@cliente.ObtenerEdadEnAños()</td>
+                    <td>
+                        <a href="cliente/editar/@cliente.Id" class="btn btn-success">Editar</a>
+                        <a class="btn btn-danger" @onclick="async ()=> await Borrar(cliente)">Borrar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+        <p>Clientes = @TotalC().ToString()</p> 
+        <p>Promedio Edad = @TotalE().ToString()</p>
+        <p>Mujeres = @TotalM().ToString()</p>
+        <p>Hombres = @TotalH().ToString()</p>
+    </div>
 </div>
-</div>
+
 @code {
-private List<Cliente> clientes = new();
-protected override void OnInitialized() {
-clientes = clienteServicio.ObtenerTodo("");
-}
-private async Task Borrar(Cliente cliente) {
-bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Estas seguro????");
-if (confirmed)
-if(clienteServicio.Borrar(cliente.Id))
-clientes.Remove(cliente);
+    private List<Cliente> clientes = new();
 
-}
-protected void Filtro(ChangeEventArgs e) {
-string cadenabuscar = e.Value.ToString();
-clientes = clienteServicio.ObtenerTodo(cadenabuscar);
-}
+    protected override void OnInitialized() {
+        clientes = clienteServicio.ObtenerTodo("");
+    }
+
+    private async Task Borrar(Cliente cliente) {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "¿Estás seguro?");
+        if (confirmed)
+            if(clienteServicio.Borrar(cliente.Id))
+                clientes.Remove(cliente);
+    }
+
+    protected void Filtro(ChangeEventArgs e) {
+        string cadenabuscar = e.Value.ToString();
+        clientes = clienteServicio.ObtenerTodo(cadenabuscar);
+    }
+
+
+        private double TotalC() {
+            return clientes.Sum(cliente => clienteServicio.Total());
+        }
+
+        private double TotalE() {
+            var hoy = DateTime.Today;
+            double totalEdades = clientes.Sum(cliente => cliente.ObtenerEdadEnAños());
+            return totalEdades / clienteServicio.Total();
+        }
+
+        private double TotalM() {
+            return clientes.Sum(cliente => clienteServicio.TotalMujeres());
+        }
+
+        private double TotalH() {
+            return clientes.Sum(cliente => clienteServicio.TotalHombres());
+        }
+
+        
 }

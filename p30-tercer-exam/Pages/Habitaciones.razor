@@ -1,59 +1,96 @@
-@* Pages/Habitaciones.razor *@
 @page "/habitaciones"
 @inject HabitacionServicio habitacionServicio
 @inject IJSRuntime jsRuntime
+
 <h3>Habitaciones</h3>
+
 <NavLink class="nav-link" href="habitacion/agregar">
-<span class="oi oi-plus" aria-hidden="true">Agregar habitacion</span>
+    <span class="oi oi-plus" aria-hidden="true">Agregar habitacion</span>
 </NavLink>
-<label>Buscar:</label>
+
+<label>Buscar habitacion:</label>
 <input type="text" @oninput="@( (e) => Filtro(e) )">
+
 <div class="row">
-<div class="col-md-6">
-<table class="table table-hover">
-<thead>
-<tr>
-<th>Id</th>
-<th>NoHab</th>
-<th>Tipo</th>
-<th>Piso</th>
-<th>Costo</th>
-</tr>
-</thead>
-<tbody>
-@foreach (var habitacion in habitaciones) {
-<tr>
-<td>@habitacion.Id</td>
-<td>@habitacion.NoHab</td>
-<td>@habitacion.Tipo</td>
-<td>@habitacion.Piso</td>
-<td>@habitacion.Costo</td>
-<td>
-
-<a href="habitacion/editar/@habitacion.Id" class="btn btn-success">Editar</a>
-
-<a class="btn btn-danger" @onclick="async ()=> await
-Borrar(habitacion)">Borrar</a>
-</td>
-</tr>
-}
-</tbody>
-</table>
+    <div class="col-md-10">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>NoHab</th>
+                    <th>Tipo</th>
+                    <th>Piso</th>
+                    <th>Costo</th>
+                    
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var habitacion in habitaciones)
+                {
+                    <tr>
+                        <td>@habitacion.NoHab</td>
+                        <td>@habitacion.Tipo</td>
+                        <td>@habitacion.Piso</td>
+                        <td>@habitacion.Costo</td>                      
+                        <td>
+                            <a href="habitacion/editar/@habitacion.Id" class="btn btn-success">Editar</a>
+                            <a class="btn btn-danger" @onclick="async ()=> await Borrar(habitacion)">Borrar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+            <p>Individual = @TotalI().ToString()</p>
+            <p> Doble = @TotalD().ToString()</p>
+            <p> Triple = @TotalT().ToString()</p>
+            <p>Total= @TotalH().ToString()</p> 
+    </div>
 </div>
-</div>
+
 @code {
-private List<Habitacion> habitaciones = new();
-protected override void OnInitialized(){
-habitaciones = habitacionServicio.ObtenerTodo("");
-}
-private async Task Borrar(Habitacion habitacion) {
-bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Estas seguro????");
-if (confirmed)
-if(habitacionServicio.Borrar(habitacion.Id))
-habitaciones.Remove(habitacion);
-}
-protected void Filtro(ChangeEventArgs e) {
-string cadenabuscar = e.Value.ToString();
-habitaciones = habitacionServicio.ObtenerTodo(cadenabuscar);
-}
+    private List<Habitacion> habitaciones = new();
+
+    protected override void OnInitialized() {
+        habitaciones = habitacionServicio.ObtenerTodo("");
+    }
+
+    private async Task Borrar(Habitacion habitacion) {
+        bool confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "¿Estás seguro?");
+        if (confirmed)
+            if(habitacionServicio.Borrar(habitacion.Id))
+                habitaciones.Remove(habitacion);
+    }
+
+    protected void Filtro(ChangeEventArgs e) {
+        string cadenabuscar = e.Value.ToString();
+        habitaciones = habitacionServicio.ObtenerTodo(cadenabuscar);
+    }
+
+
+    private double TotalPorTipo(Func<Habitacion, bool> selector) {
+        //return habitacionServicio
+        return habitaciones
+        //.ObtenerHabitaciones()
+        .Where(habitacion => selector(habitacion)) //> 0)
+        //.Sum(selector);
+        .Count();
+    }
+
+    private double TotalI() {
+        return TotalPorTipo(habitacion => habitacion.Tipo == "Individual");//habitacionServicio.TotalInd());
+    }
+
+    private double TotalD() {
+        return TotalPorTipo(habitacion => habitacion.Tipo == "Doble");//habitacionServicio.TotalDoble());
+    }
+
+    private double TotalT() {
+        return TotalPorTipo(habitacion => habitacion.Tipo == "Triple");//habitacionServicio.TotalTriple());
+    }
+
+    private double TotalH() {
+        //return TotalPorTipo(habitacion => habitacionServicio.TotalHabitaciones());
+        return habitaciones.Count;
+    }
+
 }

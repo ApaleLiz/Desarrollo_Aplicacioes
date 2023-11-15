@@ -1,0 +1,115 @@
+@* Pages/ClienteAgregarEditar.razor *@
+@page "/cliente/agregar"
+@page "/cliente/editar/{Id:int}"
+@inject ClienteServicio clienteServicio
+@inject NavigationManager NavigationManager
+
+<h3>@Titulo</h3>
+
+<div class="row">
+    <div class="col-md-10">
+        <EditForm Model="@cli" OnValidSubmit="Grabar">
+            <DataAnnotationsValidator />
+
+
+            <div class="form-group">
+                <label for="Nombre">Nombre</label>
+                <InputText class="form-control" @bind-Value="cli.Nombre" />
+                <ValidationMessage For="@(()=>cli.Nombre)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Apeido">Apellido</label>
+                <InputText class="form-control" @bind-Value="cli.Apellido" />
+                <ValidationMessage For="@(()=>cli.Apellido)" />
+            </div>
+
+            <div class="form-group">
+    <label for="Genero">Género</label>
+    <select class="form-control" @bind="generoInput" @oninput="@(e => ConvertirGenero(e))">
+        <option value="">Seleccionar Género</option>
+        <option value="M">M</option>
+        <option value="H">H</option>
+    </select>
+    <ValidationMessage For="@(()=>cli.Genero)" />
+</div>
+
+
+            <div class="form-group">
+                <label for="FechaCumple">Fecha de Cumpleaños</label>
+                <InputDate class="form-control" @bind-Value="cli.FechaCumple" />
+                <ValidationMessage For="@(()=>cli.FechaCumple)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Correo">Correo</label>
+                <InputText class="form-control" @bind-Value="cli.Correo" />
+                <ValidationMessage For="@(()=>cli.Correo)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Telefono">Teléfono</label>
+                <InputText class="form-control" @bind-Value="cli.Telefono" />
+                <ValidationMessage For="@(()=>cli.Telefono)" />
+            </div>
+
+            <div>
+                @mensaje
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Grabar" />
+                        <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancelar" />
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    Cliente cli = new Cliente();
+    private string mensaje = string.Empty;
+    private string Titulo = "Agregar Cliente";
+    private bool deshabilitar = false;
+
+    protected void Grabar()
+    {
+        if (clienteServicio.AgregarActualizar(cli))
+        {
+            mensaje = "Agregado exitosamente ";
+        }
+        else mensaje = "No pudo agregarse";
+        NavigationManager.NavigateTo("clientes", forceLoad: true);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("clientes", forceLoad: true);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (Id > 0)
+        {
+            Titulo = "Actualizar Cliente";
+            cli = clienteServicio.EcontrarPorId(Id);
+            deshabilitar = true;
+        }
+    }
+
+    private char generoInput;
+
+    // Método para convertir la entrada en char
+    private void ConvertirGenero(ChangeEventArgs e)
+    {
+        if (e.Value != null && e.Value.ToString().Length > 0)
+        {
+            cli.Genero = Convert.ToChar(e.Value.ToString()[0]);
+        }
+    }
+}

@@ -31,4 +31,15 @@ public class Cliente
     public string NombreCompleto => $"{Nombre} {Apellido}";
 
     public ICollection<Reserva> Reservas { get; set; }
+
+     public int ObtenerEdadEnAños(){
+            var hoy = DateTime.Today;
+            var edad = hoy.Year - FechaCumple.Year;
+
+            // Restar un año si aún no ha pasado el cumpleaños este año
+            if (FechaCumple.Date > hoy.AddYears(-edad))
+                edad--;
+
+            return edad;
+        }
 }

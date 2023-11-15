@@ -1,0 +1,92 @@
+@* Pages/HabitacionAgregarEditar.razor *@
+@page "/habitacion/agregar"
+@page "/habitacion/editar/{Id:int}"
+@inject HabitacionServicio habitacionServicio
+@inject NavigationManager NavigationManager
+
+<h3>@Titulo</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <EditForm Model="@hab" OnValidSubmit="Grabar">
+            <DataAnnotationsValidator />
+
+
+            <div class="form-group">
+                <label for="NoHab">Número de Habitación</label>
+                <InputNumber class="form-control" @bind-Value="hab.NoHab" />
+                <ValidationMessage For="@(()=>hab.NoHab)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Tipo">Tipo de Habitación</label>
+                <select class="form-control" @bind="hab.Tipo">
+                    <option value="">Seleccionar Tipo</option>
+                    <option value="Individual">Individual</option>
+                    <option value="Doble">Doble</option>
+                    <option value="Triple">Triple</option>
+                </select>
+                <ValidationMessage For="@(()=>hab.Tipo)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Piso">Piso</label>
+                <InputNumber class="form-control" @bind-Value="hab.Piso" />
+                <ValidationMessage For="@(()=>hab.Piso)" />
+            </div>
+
+            <div class="form-group">
+                <label for="Costo">Costo</label>
+                <InputNumber class="form-control" @bind-Value="hab.Costo" />
+                <ValidationMessage For="@(()=>hab.Costo)" />
+            </div>
+
+            <div>
+                @mensaje
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <input type="submit" class="btn btn-primary" value="Grabar" />
+                        <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancelar" />
+                    </div>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    Habitacion hab = new Habitacion();
+    private string mensaje = string.Empty;
+    private string Titulo = "Agregar Habitación";
+    private bool deshabilitar = false;
+
+    protected void Grabar()
+    {
+        if (habitacionServicio.AgregarActualizar(hab))
+        {
+            mensaje = "Agregado exitosamente ";
+        }
+        else mensaje = "No pudo agregarse";
+        NavigationManager.NavigateTo("habitaciones", forceLoad: true);
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("habitaciones", forceLoad: true);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (Id > 0)
+        {
+            Titulo = "Actualizar Habitación";
+            hab = habitacionServicio.EcontrarPorId(Id);
+            deshabilitar = true;
+        }
+    }
+}
